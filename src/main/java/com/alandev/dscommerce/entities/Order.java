@@ -14,19 +14,22 @@ public class Order {
 
     @Column(columnDefinition = "TIMESTAMP WITHOUT TIME ZONE")
     private Instant moment;
-    private OrderStatus orderStatus;
+    private OrderStatus status;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
     private User client;
 
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Payment payment;
+
     public Order() {
     }
 
-    public Order(Long id, Instant moment, OrderStatus orderStatus, User client) {
+    public Order(Long id, Instant moment, OrderStatus status, User client) {
         this.id = id;
         this.moment = moment;
-        this.orderStatus = orderStatus;
+        this.status = status;
         this.client = client;
     }
 
@@ -46,12 +49,12 @@ public class Order {
         this.moment = moment;
     }
 
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public User getClient() {
@@ -60,5 +63,13 @@ public class Order {
 
     public void setClient(User client) {
         this.client = client;
+    }
+
+    public Payment getPayment() {
+        return payment;
+    }
+
+    public void setPayment(Payment payment) {
+        this.payment = payment;
     }
 }
