@@ -40,14 +40,30 @@ public class ProductService {
     public ProductDTO insert(ProductDTO dto) {
         // instancia e copia os dados do dto para entidade
         Product entity = new Product();
-        entity.setName(dto.getName());
-        entity.setDescription(dto.getDescription());
-        entity.setPrice(dto.getPrice());
-        entity.setImgUrl(dto.getImgUrl());
+        copyDtoToEntity(dto, entity);
 
         //salva no banco
         entity = productRepository.save(entity);
         //converte em dto novamente retornando o obj salvo e atualizado
         return new ProductDTO(entity);
+    }
+
+    @Transactional
+    public ProductDTO update(Long id, ProductDTO dto) {
+        // instancia um produto com a referencia do id que eu passa como argumento
+        Product entity = productRepository.getReferenceById(id);
+        copyDtoToEntity(dto, entity);
+
+        //salva no banco
+        entity = productRepository.save(entity);
+        //converte em dto novamente retornando o obj salvo e atualizado
+        return new ProductDTO(entity);
+    }
+
+    private void copyDtoToEntity(ProductDTO dto, Product entity) {
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setImgUrl(dto.getImgUrl());
     }
 }
