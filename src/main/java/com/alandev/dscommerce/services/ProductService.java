@@ -35,4 +35,19 @@ public class ProductService {
         Page<Product> result = productRepository.findAll(pageable);
         return result.map(product -> new ProductDTO(product));
     }
+
+    @Transactional
+    public ProductDTO insert(ProductDTO dto) {
+        // instancia e copia os dados do dto para entidade
+        Product entity = new Product();
+        entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
+        entity.setPrice(dto.getPrice());
+        entity.setImgUrl(dto.getImgUrl());
+
+        //salva no banco
+        entity = productRepository.save(entity);
+        //converte em dto novamente retornando o obj salvo e atualizado
+        return new ProductDTO(entity);
+    }
 }
