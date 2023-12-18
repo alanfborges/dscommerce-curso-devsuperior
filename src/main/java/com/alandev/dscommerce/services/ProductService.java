@@ -28,8 +28,8 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<ProductDTO> findAll(Pageable pageable) {
-        Page<Product> result = repository.findAll(pageable);
+    public Page<ProductDTO> findAll(String name, Pageable pageable) {
+        Page<Product> result = repository.searchByName(name, pageable);
         return result.map(product -> new ProductDTO(product));
     }
 
@@ -39,7 +39,7 @@ public class ProductService {
         Product entity = new Product();
         copyDtoToEntity(dto, entity);
 
-        //salva no banco
+        //recebe a instancia que foi salva no banco
         entity = repository.save(entity);
         //converte em dto novamente retornando o obj salvo e atualizado
         return new ProductDTO(entity);
@@ -48,8 +48,9 @@ public class ProductService {
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto) {
         try {
-            // instancia um produto com a referencia do id que eu passa como argumento
+            // instancia um produto com a referencia do id que eu passar como argumento
             Product entity = repository.getReferenceById(id);
+            //copia os dados do dto para entidade
             copyDtoToEntity(dto, entity);
 
             //salva no banco
