@@ -30,7 +30,7 @@ public class ResourceServerConfig {
     @Value("${cors.origins}")
     private String corsOrigins;
 
-    //configuracao pra funcionar o h2 no modo test
+    //configuracao pra funcionar o h2 no modo test,
     @Bean
     @Profile("test")
     @Order(1)
