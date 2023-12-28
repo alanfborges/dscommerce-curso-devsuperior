@@ -3,6 +3,7 @@ package com.alandev.dscommerce.controllers.handlers;
 import com.alandev.dscommerce.dto.CustomError;
 import com.alandev.dscommerce.dto.ValidationError;
 import com.alandev.dscommerce.services.exceptions.DatabaseException;
+import com.alandev.dscommerce.services.exceptions.ForbiddenException;
 import com.alandev.dscommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -12,11 +13,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import javax.xml.crypto.Data;
 import java.time.Instant;
 
 @ControllerAdvice
-    public class ControllerExceptionHandler {
+public class ControllerExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<CustomError> resourceNotFound(ResourceNotFoundException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.NOT_FOUND;
@@ -39,6 +39,13 @@ import java.time.Instant;
         for (FieldError f : e.getBindingResult().getFieldErrors()) {
             err.addError(f.getField(), f.getDefaultMessage());
         }
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomError> fortbidden(ForbiddenException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomError err = new CustomError(Instant.now(), status.value(), e.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(err);
     }
 }
