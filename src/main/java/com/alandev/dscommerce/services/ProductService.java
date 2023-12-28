@@ -1,7 +1,9 @@
 package com.alandev.dscommerce.services;
 
+import com.alandev.dscommerce.dto.CategoryDTO;
 import com.alandev.dscommerce.dto.ProductDTO;
 import com.alandev.dscommerce.dto.ProductMinDTO;
+import com.alandev.dscommerce.entities.Category;
 import com.alandev.dscommerce.entities.Product;
 import com.alandev.dscommerce.repositories.ProductRepository;
 import com.alandev.dscommerce.services.exceptions.DatabaseException;
@@ -36,27 +38,18 @@ public class ProductService {
 
     @Transactional
     public ProductDTO insert(ProductDTO dto) {
-        // instancia e copia os dados do dto para entidade
         Product entity = new Product();
         copyDtoToEntity(dto, entity);
-
-        //recebe a instancia que foi salva no banco
         entity = repository.save(entity);
-        //converte em dto novamente retornando o obj salvo e atualizado
         return new ProductDTO(entity);
     }
 
     @Transactional
     public ProductDTO update(Long id, ProductDTO dto) {
         try {
-            // instancia um produto com a referencia do id que eu passar como argumento
             Product entity = repository.getReferenceById(id);
-            //copia os dados do dto para entidade
             copyDtoToEntity(dto, entity);
-
-            //salva no banco
             entity = repository.save(entity);
-            //converte em dto novamente retornando o obj salvo e atualizado
             return new ProductDTO(entity);
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException("Recurso não encontrado");
@@ -80,5 +73,12 @@ public class ProductService {
         entity.setDescription(dto.getDescription());
         entity.setPrice(dto.getPrice());
         entity.setImgUrl(dto.getImgUrl());
+
+        entity.getCategories().clear();
+        for (CategoryDTO catDTO : dto.getCategories()) {
+            Category cat = new Category();
+            cat.setId(catDTO.getId());
+            entity.getCategories().add(cat);
+        }
     }
 }
